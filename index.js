@@ -32,7 +32,7 @@ async function run() {
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
         const database = client.db("brandDB");
-        const userCollection = database.collection("users");
+        const productsCollection = database.collection("products");
 
         // app.get('/users', async (req, res) => {
         //     const cursor = userCollection.find()
@@ -40,19 +40,25 @@ async function run() {
         //     res.send(data)
         // })
 
-        app.post('/users', async (req, res) => {
-            const user = req.body
-            console.log('new user', user);
-            const result = await userCollection.insertOne(user)
+        app.post('/products', async (req, res) => {
+            const product = req.body
+            console.log('new product', product);
+            const result = await productsCollection.insertOne(product)
             res.send(result)
         })
 
-        // app.get('/users/:id', async (req, res) => {
-        //     const id = req.params.id
-        //     const query = { _id: new ObjectId(id) }
-        //     const user = await userCollection.findOne(query)
-        //     res.send(user)
-        // })
+        app.get('/products/:name', async (req, res) => {
+            const name = req.params.name
+            console.log(name);
+            // const query = { _id: new ObjectId(id) }
+            const capitalizedString = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+            const query = { brandName: `${capitalizedString}` };
+            const cursor = productsCollection.find(query)
+            // const user = await userCollection.findOne(query)
+            const askedProducts = await cursor.toArray()
+            console.log(askedProducts);
+            res.send(askedProducts)
+        })
 
         // app.put('/users/:id', async (req, res) => {
         //     const id = req.params.id
