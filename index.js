@@ -35,22 +35,15 @@ async function run() {
         const productsCollection = database.collection("products");
         const cartCollection = database.collection("cart")
 
-        // app.get('/users', async (req, res) => {
-        //     const cursor = userCollection.find()
-        //     const data = await cursor.toArray()
-        //     res.send(data)
-        // })
 
         app.post('/products', async (req, res) => {
             const product = req.body
-            console.log('new product', product);
             const result = await productsCollection.insertOne(product)
             res.send(result)
         })
 
         app.post('/cart', async (req, res) => {
             const product = req.body
-            console.log('new product in cart', product);
             const result = await cartCollection.insertOne(product)
             res.send(result)
         })
@@ -81,25 +74,27 @@ async function run() {
             res.send(product)
         })
 
-        // app.put('/users/:id', async (req, res) => {
-        //     const id = req.params.id
-        //     const updatedUser = req.body
-        //     const filter = { _id: new ObjectId(id) }
-        //     const options = { upsert: true }
-        //     const updateUser = {
-        //         $set: {
-        //             name: updatedUser.name,
-        //             email: updatedUser.email
-        //         }
-        //     }
-        //     const result = await userCollection.updateOne(filter, updateUser, options)
-        //     res.send(result)
-        //     console.log(id, updatedUser);
-        // })
+        app.put('/products/:id', async (req, res) => {
+            const id = req.params.id
+            const updatedProduct = req.body
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true }
+            const updateProduct = {
+                $set: {
+                    name: updatedProduct.name,
+                    brandName: updatedProduct.brandName,
+                    imgURL: updatedProduct.imgURL,
+                    type: updatedProduct.type,
+                    price: updatedProduct.price,
+                    ratings: updatedProduct.ratings
+                }
+            }
+            const result = await productsCollection.updateOne(filter, updateProduct, options)
+            res.send(result)
+        })
 
         app.delete('/deleteProduct', async (req, res) => {
             const { userId, productId } = req.body
-            console.log(userId, productId);
             const query = { "uid": `${userId}`, _id: new ObjectId(`${productId}`) }
             const result = await cartCollection.deleteOne(query)
             res.send(result)
