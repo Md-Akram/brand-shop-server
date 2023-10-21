@@ -33,6 +33,7 @@ async function run() {
 
         const database = client.db("brandDB");
         const productsCollection = database.collection("products");
+        const cartCollection = database.collection("cart")
 
         // app.get('/users', async (req, res) => {
         //     const cursor = userCollection.find()
@@ -47,6 +48,21 @@ async function run() {
             res.send(result)
         })
 
+        app.post('/cart', async (req, res) => {
+            const product = req.body
+            console.log('new product in cart', product);
+            const result = await cartCollection.insertOne(product)
+            res.send(result)
+        })
+
+        app.get('/cart/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { uid: `${id}` }
+            const cursor = cartCollection.find(query)
+            const cartProducts = await cursor.toArray()
+            res.send(cartProducts)
+        })
+
         app.get('/products/:name', async (req, res) => {
             const name = req.params.name
             const capitalizedString = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
@@ -54,7 +70,7 @@ async function run() {
             const cursor = productsCollection.find(query)
 
             const askedProducts = await cursor.toArray()
-            console.log(askedProducts);
+
             res.send(askedProducts)
         })
 
@@ -81,12 +97,13 @@ async function run() {
         //     console.log(id, updatedUser);
         // })
 
-        // app.delete('/users/:id', async (req, res) => {
-        //     const id = req.params.id
-        //     const query = { _id: new ObjectId(id) }
-        //     const result = await userCollection.deleteOne(query)
-        //     res.send(result)
-        // })
+        app.delete('/deleteProduct', async (req, res) => {
+            const { userId, productId } = req.body
+            console.log(userId, productId);
+            const query = { "uid": `${userId}`, _id: new ObjectId(`${productId}`) }
+            const result = await cartCollection.deleteOne(query)
+            res.send(result)
+        })
 
 
 
