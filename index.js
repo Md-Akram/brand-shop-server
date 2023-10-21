@@ -49,15 +49,20 @@ async function run() {
 
         app.get('/products/:name', async (req, res) => {
             const name = req.params.name
-            console.log(name);
-            // const query = { _id: new ObjectId(id) }
             const capitalizedString = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
             const query = { brandName: `${capitalizedString}` };
             const cursor = productsCollection.find(query)
-            // const user = await userCollection.findOne(query)
+
             const askedProducts = await cursor.toArray()
             console.log(askedProducts);
             res.send(askedProducts)
+        })
+
+        app.get('/product/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(`${id}`) }
+            const product = await productsCollection.findOne(query)
+            res.send(product)
         })
 
         // app.put('/users/:id', async (req, res) => {
